@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+"""CRUD API using fastapi and postgresql"""
 import datetime
 import psycopg2
 import uuid
