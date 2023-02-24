@@ -2,15 +2,14 @@
 """CRUD API using fastapi and postgresql"""
 from fastapi import Depends, FastAPI, Response, status, HTTPException
 from sqlalchemy.orm import Session
-from passlib.context import CryptContext
 from crud_fastapi.schemas.database import engine, get_db
 from crud_fastapi.schemas.post import Post
 from crud_fastapi.schemas.user import UserSchema, UserRes
 from crud_fastapi.models import posts, users
+from crud_fastapi.utils import hash_pass
 
 posts.Base.metadata.create_all(bind=engine)
 users.Base.metadata.create_all(bind=engine)
-pwd_context = CryptContext(schemes=["Bcrypt"], deprecated="auto")
 
 app = FastAPI()
 
@@ -130,7 +129,7 @@ async def create_user(
     db: Session = Depends(get_db)
 ):
     """Create new user"""
-    hashed_pwd = pwd_context.hash(c_user.password)
+    hashed_pwd = hash_pass.hash_pwd(c_user.password)
     c_user.password = hashed_pwd
     user = users.UserModel(**c_user.dict())
     db.add(user)
