@@ -23,3 +23,13 @@ class Post(BaseModel):
         """Number validator"""
         values["updated_at"] = datetime.now()
         return values
+
+
+class PostResponse(Post):
+    """Post response"""
+    id: int
+    created_at: datetime
+
+    class Config:
+        """Postresponse configuration"""
+        orm_mode = True

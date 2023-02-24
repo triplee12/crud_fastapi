@@ -2,11 +2,15 @@
 """CRUD API using fastapi and postgresql"""
 from fastapi import Depends, FastAPI, Response, status, HTTPException
 from sqlalchemy.orm import Session
+from passlib.context import CryptContext
 from crud_fastapi.schemas.database import engine, get_db
 from crud_fastapi.schemas.post import Post
-from crud_fastapi.models import posts
+from crud_fastapi.schemas.user import UserSchema, UserRes
+from crud_fastapi.models import posts, users
 
 posts.Base.metadata.create_all(bind=engine)
+users.Base.metadata.create_all(bind=engine)
+pwd_context = CryptContext(schemes=["Bcrypt"], deprecated="auto")
 
 app = FastAPI()
 
@@ -23,7 +27,7 @@ async def get_posts(db: Session = Depends(get_db)):
     # cursor.execute("""SELECT * FROM posts""")
     # posts = cursor.fetchall()
     all_posts = db.query(posts.PostModel).all()
-    return {"posts": all_posts}
+    return all_posts
 
 
 @app.get("/posts/{_id}")
@@ -39,11 +43,14 @@ def get_post(_id: int, db: Session = Depends(get_db)):
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Post not found error"
         )
-    return {"post": post}
+    return post
 
 
 @app.put("/posts/update/{_id}")
-def update_post(_id: int, post: Post, db: Session = Depends(get_db)):
+def update_post(
+    _id: int, post: Post,
+    db: Session = Depends(get_db)
+):
     """Updates post details"""
     # cursor.execute(
     #     """
@@ -56,7 +63,7 @@ def update_post(_id: int, post: Post, db: Session = Depends(get_db)):
     if query.first():
         query.update(post.dict(), synchronize_session=False)
         db.commit()
-        return {"post": query.first()}
+        return query.first()
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND,
         detail="Post not found error"
@@ -110,8 +117,29 @@ async def create_post(
     db.refresh(post)
     if post:
         response.status_code = status.HTTP_201_CREATED
-        return {"post": post}
+        return post
     raise HTTPException(
         status.HTTP_422_UNPROCESSABLE_ENTITY,
         detail="Post not created"
+    )
+
+
+@app.post("/users/create", response_model=UserRes)
+async def create_user(
+    c_user: UserSchema, response: Response,
+    db: Session = Depends(get_db)
+):
+    """Create new user"""
+    hashed_pwd = pwd_context.hash(c_user.password)
+    c_user.password = hashed_pwd
+    user = users.UserModel(**c_user.dict())
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    if user:
+        response.status_code = status.HTTP_201_CREATED
+        return user
+    raise HTTPException(
+        status.HTTP_422_UNPROCESSABLE_ENTITY,
+        detail="User not created. User with username or email already exists"
     )
