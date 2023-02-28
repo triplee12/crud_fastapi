@@ -6,7 +6,7 @@ from crud_fastapi.schemas.database import get_db
 from crud_fastapi.models import posts
 from crud_fastapi.schemas.post import Post
 
-route = APIRouter(prefix="/posts")
+route = APIRouter(prefix="/posts", tags=["Posts"])
 
 
 @route.get("/")

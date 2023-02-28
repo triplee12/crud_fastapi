@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 """User schema definition"""
 from datetime import date
+from typing import Optional
 from pydantic import BaseModel, EmailStr
 
 
@@ -28,3 +29,10 @@ class UserRes(BaseModel):
     class Config:
         """Configure UserRes object to dictionary"""
         orm_mode = True
+
+
+class UserAuth(BaseModel):
+    """User Auth schema class"""
+    username: str
+    email: Optional[EmailStr] = None
+    password: str

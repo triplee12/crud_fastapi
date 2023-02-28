@@ -7,7 +7,7 @@ from crud_fastapi.models import users
 from crud_fastapi.schemas.user import UserSchema, UserRes
 from crud_fastapi.utils import hash_pass
 
-route = APIRouter(prefix="/users")
+route = APIRouter(prefix="/users", tags=["Users"])
 
 
 @route.post("/create", response_model=UserRes)
