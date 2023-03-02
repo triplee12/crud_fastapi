@@ -2,16 +2,19 @@
 """Posts routes"""
 from typing import List, Optional
 from fastapi import Depends, Response, status, HTTPException, APIRouter
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 from crud_fastapi.schemas.database import get_db
 from crud_fastapi.apps.oauth import get_current_user
-from crud_fastapi.models import posts
-from crud_fastapi.schemas.post import Post, PostRes, UpdatePost
+from crud_fastapi.models import posts, likes
+from crud_fastapi.schemas.post import (
+    Post, PostRes, UpdatePost, PostLike
+)
 
 route = APIRouter(prefix="/posts", tags=["Posts"])
 
 
-@route.get("/", response_model=List[PostRes])
+@route.get("/", response_model=List[PostLike])
 async def get_posts(
     db: Session = Depends(get_db),
     limit: int = 100,
@@ -24,9 +27,19 @@ async def get_posts(
 
     all_posts = db.query(posts.PostModel).filter(
         posts.PostModel.content.icontains(search)
-    )
-    all_posts = all_posts.limit(limit).offset(skip).all()
-    return all_posts
+    ).filter(
+        posts.PostModel.title.icontains(search)
+    ).limit(limit).offset(skip).all()
+
+    like_posts = db.query(posts.PostModel,
+        func.count(likes.LikesModel.post_id).label("likes")
+    ).join(
+        likes.LikesModel,
+        likes.LikesModel.post_id == posts.PostModel.id,
+        isouter=True
+    ).group_by(posts.PostModel.id).all()
+
+    return like_posts
 
 
 @route.get("/{_id}", response_model=PostRes)

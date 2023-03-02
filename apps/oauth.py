@@ -8,17 +8,18 @@ from sqlalchemy.orm import Session
 from crud_fastapi.schemas.user import TokenData
 from crud_fastapi.schemas.database import get_db
 from crud_fastapi.models.users import UserModel
+from crud_fastapi.settings import settings
 
 OAUTH2 = OAuth2PasswordBearer(tokenUrl="login")
-SECRET_KEY = "3df1c94b9484f5a6ddc102020db0338025c7d27fe65b5d2418a0e7cc013d2c80"
+SECRET_KEY = settings.OAUTH2_SECRET_KEY
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 4
+ACCESS_TOKEN_EXPIRE_WEEKS = 4
 
 
 def create_token(data: dict):
     """Create a new access token"""
     to_encode = data.copy()
-    expire = datetime.utcnow() + timedelta(weeks=ACCESS_TOKEN_EXPIRE_MINUTES)
+    expire = datetime.utcnow() + timedelta(weeks=ACCESS_TOKEN_EXPIRE_WEEKS)
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt

@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 """Post schema"""
 from datetime import datetime
+from typing import List
 from pydantic import BaseModel, root_validator
 from .user import UserRes
 
@@ -40,4 +41,14 @@ class PostRes(Post):
 
     class Config:
         """Postresponse configuration"""
+        orm_mode = True
+
+
+class PostLike(BaseModel):
+    """Post likes"""
+    post: PostRes
+    likes: int
+
+    class Config:
+        """Post like response configuration"""
         orm_mode = True

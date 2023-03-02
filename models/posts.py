@@ -41,3 +41,4 @@ class PostModel(Base):
         nullable=False
     )
     owner = relationship("UserModel")  # , back_populates="posts"
+    likes = relationship("LikesModel")
