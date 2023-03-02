@@ -3,8 +3,10 @@
 from sqlalchemy import (Column,
                         String, Integer,
                         Text, Boolean,
-                        TIMESTAMP, text
+                        TIMESTAMP, text,
+                        ForeignKey
                         )
+from sqlalchemy.orm import relationship
 from crud_fastapi.schemas.database import Base
 
 
@@ -29,3 +31,13 @@ class PostModel(Base):
         nullable=False,
         server_default=text("now()")
     )
+    user_username = Column(
+        String,
+        ForeignKey(
+            column="users.username",
+            ondelete="CASCADE",
+            link_to_name=True
+        ),
+        nullable=False
+    )
+    owner = relationship("UserModel")  # , back_populates="posts"

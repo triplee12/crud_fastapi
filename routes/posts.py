@@ -1,26 +1,37 @@
 #!/usr/bin/python3
 """Posts routes"""
+from typing import List, Optional
 from fastapi import Depends, Response, status, HTTPException, APIRouter
 from sqlalchemy.orm import Session
 from crud_fastapi.schemas.database import get_db
+from crud_fastapi.apps.oauth import get_current_user
 from crud_fastapi.models import posts
-from crud_fastapi.schemas.post import Post
+from crud_fastapi.schemas.post import Post, PostRes, UpdatePost
 
 route = APIRouter(prefix="/posts", tags=["Posts"])
 
 
-@route.get("/")
-async def get_posts(db: Session = Depends(get_db)):
+@route.get("/", response_model=List[PostRes])
+async def get_posts(
+    db: Session = Depends(get_db),
+    limit: int = 100,
+    skip: int = 0,
+    search: Optional[str] = ''
+):
     """Retrives all posts"""
     # cursor.execute("""SELECT * FROM posts""")
     # posts = cursor.fetchall()
-    all_posts = db.query(posts.PostModel).all()
+
+    all_posts = db.query(posts.PostModel).filter(
+        posts.PostModel.content.icontains(search)
+    )
+    all_posts = all_posts.limit(limit).offset(skip).all()
     return all_posts
 
 
-@route.get("/{_id}")
+@route.get("/{_id}", response_model=PostRes)
 def get_post(_id: int, db: Session = Depends(get_db)):
-    """Return post details"""
+    """Return a post details"""
     # cursor.execute("""SELECT * FROM posts WHERE id = %s""", (str(id),))
     # post = cursor.fetchone()
     post = db.query(posts.PostModel).filter(
@@ -34,10 +45,11 @@ def get_post(_id: int, db: Session = Depends(get_db)):
     return post
 
 
-@route.put("/update/{_id}")
+@route.put("/update/{_id}", response_model=PostRes)
 def update_post(
-    _id: int, post: Post,
-    db: Session = Depends(get_db)
+    _id: int, post: UpdatePost,
+    db: Session = Depends(get_db),
+    current_user: str = Depends(get_current_user)
 ):
     """Updates post details"""
     # cursor.execute(
@@ -48,10 +60,15 @@ def update_post(
     # )
     # updated = cursor.fetchone()
     query = db.query(posts.PostModel).filter(posts.PostModel.id == _id)
-    if query.first():
+    if query.first().user_username == current_user.username:
         query.update(post.dict(), synchronize_session=False)
         db.commit()
         return query.first()
+    elif query.first().user_username != current_user.username:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access denied!"
+        )
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND,
         detail="Post not found error"
@@ -61,7 +78,8 @@ def update_post(
 @route.delete("/delete/{_id}")
 def delete_post(
     _id: int, response: Response,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: str = Depends(get_current_user)
 ) -> Response:
     """Delete post"""
     # cursor.execute(
@@ -72,22 +90,28 @@ def delete_post(
 
     to_delete = db.query(posts.PostModel).filter(posts.PostModel.id == _id)
 
-    if to_delete.first():
+    if to_delete.first().user_username == current_user.username:
         to_delete.delete(synchronize_session=False)
         db.commit()
         response.status_code = status.HTTP_204_NO_CONTENT
         return response.status_code
+    elif to_delete.first().user_username != current_user.username:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access denied!"
+        )
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND,
         detail="Post not found error"
     )
 
 
-@route.post("/posts")
+@route.post("/create", response_model=PostRes)
 async def create_post(
     post: Post,
     response: Response,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: str = Depends(get_current_user)
 ):
     """Create new post"""
     # cursor.execute(
@@ -99,7 +123,9 @@ async def create_post(
     # )
     # post = cursor.fetchone()
     # conn.commit()
-    post = posts.PostModel(**post.dict())
+
+    owner = current_user.username
+    post = posts.PostModel(user_username=owner, **post.dict())
     db.add(post)
     db.commit()
     db.refresh(post)

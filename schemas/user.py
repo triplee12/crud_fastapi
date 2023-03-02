@@ -36,3 +36,14 @@ class UserAuth(BaseModel):
     username: str
     email: Optional[EmailStr] = None
     password: str
+
+
+class AccessToken(BaseModel):
+    """Access Token schema class"""
+    access_token: str
+    token_type: str
+
+
+class TokenData(BaseModel):
+    """Token data schema"""
+    username: Optional[str] = None

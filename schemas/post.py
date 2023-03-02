@@ -2,6 +2,7 @@
 """Post schema"""
 from datetime import datetime
 from pydantic import BaseModel, root_validator
+from .user import UserRes
 
 
 class Post(BaseModel):
@@ -9,10 +10,14 @@ class Post(BaseModel):
     title: str
     content: str
     published: bool = False
-    updated_at: str = datetime.now()
 
     def __str__(self) -> str:
         return self.title
+
+
+class UpdatePost(Post):
+    """Update post schema"""
+    updated_at: str = datetime.now
 
     class Config:
         """Config"""
@@ -25,10 +30,13 @@ class Post(BaseModel):
         return values
 
 
-class PostResponse(Post):
+class PostRes(Post):
     """Post response"""
     id: int
+    user_username: str
+    updated_at: datetime
     created_at: datetime
+    owner: UserRes
 
     class Config:
         """Postresponse configuration"""
