@@ -2,8 +2,8 @@
 """User routes"""
 from fastapi import Depends, Response, status, HTTPException, APIRouter
 from sqlalchemy.orm import Session
+from crud_fastapi.models.base_models import UserModel
 from crud_fastapi.schemas.database import get_db
-from crud_fastapi.models import users
 from crud_fastapi.schemas.user import UserSchema, UserRes
 from crud_fastapi.utils import hash_pass
 
@@ -18,7 +18,7 @@ async def create_user(
     """Create new user"""
     hashed_pwd = hash_pass.hash_pwd(c_user.password)
     c_user.password = hashed_pwd
-    user = users.UserModel(**c_user.dict())
+    user = UserModel(**c_user.dict())
     db.add(user)
     db.commit()
     db.refresh(user)
@@ -34,8 +34,8 @@ async def create_user(
 @route.get("/{username}", response_model=UserRes)
 def get_user(username: str, db: Session = Depends(get_db)):
     """Get a user by username"""
-    user = db.query(users.UserModel).filter(
-        users.UserModel.username == username
+    user = db.query(UserModel).filter(
+        UserModel.username == username
     ).first()
     if user:
         return user

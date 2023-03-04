@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 """Post schema"""
 from datetime import datetime
-from typing import List
 from pydantic import BaseModel, root_validator
 from .user import UserRes
 
@@ -11,9 +10,6 @@ class Post(BaseModel):
     title: str
     content: str
     published: bool = False
-
-    def __str__(self) -> str:
-        return self.title
 
 
 class UpdatePost(Post):
@@ -34,7 +30,6 @@ class UpdatePost(Post):
 class PostRes(Post):
     """Post response"""
     id: int
-    user_username: str
     updated_at: datetime
     created_at: datetime
     owner: UserRes
@@ -44,9 +39,9 @@ class PostRes(Post):
         orm_mode = True
 
 
-class PostLike(BaseModel):
+class PostVote(BaseModel):
     """Post likes"""
-    post: PostRes
+    # Post: PostRes
     likes: int
 
     class Config:

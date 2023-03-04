@@ -2,34 +2,34 @@
 """CRUD API using fastapi and postgresql"""
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from crud_fastapi.models import posts, users, likes
-from crud_fastapi.schemas.database import engine
+# from crud_fastapi.models.base_models import PostModel, UserModel,VoteModel
+# from crud_fastapi.schemas.database import engine
 from crud_fastapi.routes import (
     posts as posts_routes,
     users as users_routes,
     auth,
-    likes as likes_routes
+    votes as likes_routes
 )
 
-users.Base.metadata.create_all(bind=engine)
-posts.Base.metadata.create_all(bind=engine)
-likes.Base.metadata.create_all(bind=engine)
+# users.Base.metadata.create_all(bind=engine)
+# posts.Base.metadata.create_all(bind=engine)
+# votes.Base.metadata.create_all(bind=engine)
 
-# origins = [
-#     "http://localhost:3000",
-# ]
+origins = [
+    "*",
+]
 
 app = FastAPI()
-# app.add_middleware(
-#     CORSMiddleware,
-#     allow_origins=origins,
-#     allow_credentials=True,
-#     allow_methods=["*"],
-#     allow_headers=["*"],
-# )
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+app.include_router(auth.router)
 app.include_router(posts_routes.route)
 app.include_router(users_routes.route)
-app.include_router(auth.router)
 app.include_router(likes_routes.router)
 
 

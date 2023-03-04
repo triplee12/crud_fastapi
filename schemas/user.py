@@ -11,6 +11,7 @@ class UserSchema(BaseModel):
     first_name: str
     last_name: str
     email: EmailStr
+    ph_number: str
     password: str
     dob: date
 
@@ -24,6 +25,7 @@ class UserRes(BaseModel):
     first_name: str
     last_name: str
     email: EmailStr
+    ph_number: str
     dob: date
 
     class Config:
@@ -46,4 +48,4 @@ class AccessToken(BaseModel):
 
 class TokenData(BaseModel):
     """Token data schema"""
-    username: Optional[str] = None
+    id: Optional[int] = None

@@ -7,11 +7,10 @@ from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from crud_fastapi.schemas.user import TokenData
 from crud_fastapi.schemas.database import get_db
-from crud_fastapi.models.users import UserModel
-from crud_fastapi.settings import settings
+from crud_fastapi.models.base_models import UserModel
 
 OAUTH2 = OAuth2PasswordBearer(tokenUrl="login")
-SECRET_KEY = settings.OAUTH2_SECRET_KEY
+SECRET_KEY = "3df1c94b9484f5a6ddc102020db0338025c7d27fe65b5d2418a0e7cc013d2c80"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_WEEKS = 4
 
@@ -29,10 +28,11 @@ def verify_token(token: str, credentials_exception):
     """Verify access token provided by user"""
     try:
         decoded_jwt = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username: str = decoded_jwt.get("username")
-        if username is None:
+        user_id: int = decoded_jwt.get("id")
+        print(user_id)
+        if user_id is None:
             raise credentials_exception
-        token_data = TokenData(username=username)
+        token_data = TokenData(id=user_id)
 
     except JWTError as exc:
         raise credentials_exception from exc
@@ -53,7 +53,7 @@ def get_current_user(
 
     user = verify_token(token, credentials_exception)
     query = db.query(UserModel).filter(
-        UserModel.username == user.username
+        UserModel.id == user.id
     ).first()
 
     return query

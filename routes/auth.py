@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from crud_fastapi.apps.oauth import create_token
 from crud_fastapi.schemas.database import get_db
 from crud_fastapi.schemas.user import AccessToken
-from crud_fastapi.models.users import UserModel
+from crud_fastapi.models.base_models import UserModel
 from crud_fastapi.utils.hash_pass import verify_pwd
 
 router = APIRouter(tags=["Authentication"])
@@ -36,5 +36,7 @@ def login(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Invalid credentials"
         )
-    access_token = create_token(data={"username": q_username.username})
+    access_token = create_token(
+        data={"id": q_username.id, "username": q_username.username}
+    )
     return {"access_token": access_token, "token_type": "bearer"}

@@ -2,12 +2,10 @@
 """Likes routers"""
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from crud_fastapi.models.posts import PostModel
 from crud_fastapi.schemas.database import get_db
-from crud_fastapi.models.likes import LikesModel
+from crud_fastapi.models.base_models import VoteModel, PostModel
 from crud_fastapi.apps.oauth import get_current_user
-from crud_fastapi.schemas.like import LikeSchema
-# from crud_fastapi.utils.checks import check_equals
+from crud_fastapi.schemas.vote import LikeSchema
 
 router = APIRouter(prefix="/likes", tags=["Likes"])
 
@@ -22,14 +20,14 @@ def like_router(
 
     if not post:
         raise HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND,
-        detail="Post not found"
-    )
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Post not found"
+        )
 
     user = current_user
-    check_like = db.query(LikesModel).filter(
-        LikesModel.post_id == like.post_id,
-        LikesModel.user_username == user.username
+    check_like = db.query(VoteModel).filter(
+        VoteModel.post_id == like.post_id,
+        VoteModel.user_id == user.id
     )
     liked = check_like.first()
 
@@ -39,7 +37,7 @@ def like_router(
                 status_code=status.HTTP_409_CONFLICT,
                 detail="Post already liked"
             )
-        to_like = LikesModel(post_id=like.post_id, user_username=user.username)
+        to_like = VoteModel(post_id=like.post_id, user_id=user.id)
         db.add(to_like)
         db.commit()
         like.has_liked = True
