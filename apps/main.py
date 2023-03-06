@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 # from models.base_models import PostModel, UserModel,VoteModel
 # from schemas.database import engine
-from routes import (
+from crud_fastapi.routes import (
     posts as posts_routes,
     users as users_routes,
     auth,
@@ -36,4 +36,4 @@ app.include_router(likes_routes.router)
 @app.get("/")
 async def root():
     """Root route"""
-    return {"messaga": "Welcome to my API world!"}
+    return {"message": "Welcome to my API world!"}

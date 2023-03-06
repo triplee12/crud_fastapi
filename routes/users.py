@@ -2,10 +2,10 @@
 """User routes"""
 from fastapi import Depends, Response, status, HTTPException, APIRouter
 from sqlalchemy.orm import Session
-from models.base_models import UserModel
-from schemas.database import get_db
-from schemas.user import UserSchema, UserRes
-from utils import hash_pass
+from crud_fastapi.models.base_models import UserModel
+from crud_fastapi.schemas.database import get_db
+from crud_fastapi.schemas.user import UserSchema, UserRes
+from crud_fastapi.utils import hash_pass
 
 route = APIRouter(prefix="/users", tags=["Users"])
 

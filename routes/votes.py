@@ -2,10 +2,10 @@
 """Likes routers"""
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from schemas.database import get_db
-from models.base_models import VoteModel, PostModel
-from apps.oauth import get_current_user
-from schemas.vote import LikeSchema
+from crud_fastapi.schemas.database import get_db
+from crud_fastapi.models.base_models import VoteModel, PostModel
+from crud_fastapi.apps.oauth import get_current_user
+from crud_fastapi.schemas.vote import LikeSchema
 
 router = APIRouter(prefix="/likes", tags=["Likes"])
 
