@@ -2,9 +2,9 @@
 """CRUD API using fastapi and postgresql"""
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-# from crud_fastapi.models.base_models import PostModel, UserModel,VoteModel
-# from crud_fastapi.schemas.database import engine
-from crud_fastapi.routes import (
+# from models.base_models import PostModel, UserModel,VoteModel
+# from schemas.database import engine
+from routes import (
     posts as posts_routes,
     users as users_routes,
     auth,

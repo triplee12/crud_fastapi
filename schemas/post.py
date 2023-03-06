@@ -41,7 +41,7 @@ class PostRes(Post):
 
 class PostVote(BaseModel):
     """Post likes"""
-    # Post: PostRes
+    # post: PostRes
     likes: int
 
     class Config:

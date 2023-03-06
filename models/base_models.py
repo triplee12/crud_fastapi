@@ -7,7 +7,7 @@ from sqlalchemy import (Column,
                         ForeignKey, Date
                         )
 from sqlalchemy.orm import relationship
-from crud_fastapi.schemas.database import Base
+from schemas.database import Base
 
 
 class PostModel(Base):

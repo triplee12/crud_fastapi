@@ -4,10 +4,10 @@ from typing import List, Optional
 from fastapi import Depends, Response, status, HTTPException, APIRouter
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import func
-from crud_fastapi.schemas.database import get_db
-from crud_fastapi.apps.oauth import get_current_user
-from crud_fastapi.models.base_models import PostModel, VoteModel
-from crud_fastapi.schemas.post import (
+from schemas.database import get_db
+from apps.oauth import get_current_user
+from models.base_models import PostModel, VoteModel
+from schemas.post import (
     Post, PostRes, UpdatePost, PostVote
 )
 

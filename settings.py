@@ -1,14 +1,19 @@
 #!/usr/bin/python3
 """Base settings for the application"""
-import os
 from pydantic import BaseSettings
 
 
 class Settings(BaseSettings):
     """Settings for environment variables"""
-    OAUTH2_SECRET_KEY: str = os.getenv('OAUTH2_SECRET_KEY')
-    DB_USER_PASSW: str = os.getenv("DB_USER_PASSW")
-    DB_NAME: str = os.getenv("DB_NAME")
+    OAUTH2_SECRET_KEY: str
+    DB_USER_PASSW: str
+    DB_NAME: str
+    ALGORITHM: str
+    ACCESS_TOKEN_EXPIRE_WEEKS: int
+
+    class Config:
+        """Configuration for environment variables"""
+        env_file = "./.env"
 
 
 settings = Settings()
