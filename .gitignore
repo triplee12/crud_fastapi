@@ -130,4 +130,4 @@ dmypy.json
 
 # test database
 /tests/database.py
-/tests/test_posts.py
+# /tests/test_posts.py

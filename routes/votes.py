@@ -31,7 +31,12 @@ def like_router(
     )
     liked = check_like.first()
 
-    if int(like.dir_) == 1:
+    if user.id == post.owner_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not allowed to like this post"
+        )
+    elif int(like.dir_) == 1:
         if liked:
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,

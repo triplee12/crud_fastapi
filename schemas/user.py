@@ -21,6 +21,7 @@ class UserSchema(BaseModel):
 
 class UserRes(BaseModel):
     """User response schema"""
+    id: int
     username: str
     first_name: str
     last_name: str
