@@ -13,7 +13,7 @@ from crud_fastapi.schemas import user
 
 PASSW = settings.DB_USER_PASSW
 DB_NAME = settings.DB_NAME
-SQLALCHEMY_DATABASE_URL = f"postgresql://{PASSW}@localhost/test_{DB_NAME}"
+SQLALCHEMY_DATABASE_URL = f"postgresql://{PASSW}@localhost/{DB_NAME}_test"
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 testing_session_local = sessionmaker(
     autoflush=False,
