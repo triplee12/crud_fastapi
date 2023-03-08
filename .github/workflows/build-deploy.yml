@@ -17,11 +17,11 @@ jobs:
     environment:
       name: testing
     env:
-      OAUTH2_SECRET_KEY: ${{secret.OAUTH2_SECRET_KEY}}
-      DB_USER_PASSW: ${{secret.DB_USER_PASSW}}
-      DB_NAME: ${{secret.DB_NAME}}
-      ACCESS_TOKEN_EXPIRE_WEEKS: ${{secret.ACCESS_TOKEN_EXPIRE_WEEKS}}
-      ALGORITHM: ${{secret.ALGORITHM}}
+      OAUTH2_SECRET_KEY: ${{secrets.OAUTH2_SECRET_KEY}}
+      DB_USER_PASSW: ${{secrets.DB_USER_PASSW}}
+      DB_NAME: ${{secrets.DB_NAME}}
+      ACCESS_TOKEN_EXPIRE_WEEKS: ${{secrets.ACCESS_TOKEN_EXPIRE_WEEKS}}
+      ALGORITHM: ${{secrets.ALGORITHM}}
     runs-on: ubuntu-latest
     steps:
       - name: Pulling from git repo
