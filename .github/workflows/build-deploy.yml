@@ -14,6 +14,15 @@ on:
       - "main"
 jobs:
   job_1:
+    env:
+      OAUTH2_SECRET_KEY: "3df1c94b9484f5a6ddc102020db0338025c7d27fe65b5d2418a0e7cc013d2c80"
+      DB_USER_PASSW: "postgres:myPassword"
+      DB_NAME: "crudfastapi"
+      ACCESS_TOKEN_EXPIRE_WEEKS: 4
+      ALGORITHM: "HS256"
+      POSTGRES_PASSWORDS: "POSTGES_PASSWORDS"
+      POSTGRES_DB: "POSTGRES_DB"
+      POSTGRES_USER: "POSTGRES_USER"
     runs-on: ubuntu-latest
     steps:
       - name: Pulling from git repo
