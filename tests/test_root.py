@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 """Test for root routers"""
-from .database import session, client
 
 
 def test_root(client):
